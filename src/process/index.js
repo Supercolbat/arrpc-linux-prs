@@ -34,7 +34,7 @@ export default class ProcessServer {
 
     // log(`got processed in ${(performance.now() - startTime).toFixed(2)}ms`);
 
-    for (const [ pid, _path, args ] of processes) {
+    for (const [ pid, _path, args, _cwdPath = '' ] of processes) {
       const path = _path.toLowerCase().replaceAll('\\', '/');
       
       // the cache key includes every dependency of the DetectableDB scan
@@ -45,9 +45,10 @@ export default class ProcessServer {
         detected = cache[cacheKey].detected;
       }
       else {
+        const cwdPath = _cwdPath.toLowerCase().replaceAll('\\', '/');
         const toCompare = [];
         const splitPath = path.split('/');
-        for (let i = 1; i < splitPath.length; i++) {
+        for (let i = 1; i < splitPath.length || i == 1; i++) {
           toCompare.push(splitPath.slice(-i).join('/'));
         }
 
