@@ -57,6 +57,8 @@ export default class ProcessServer {
           toCompare.push(p.replace('.x64', ''));
           toCompare.push(p.replace('x64', ''));
           toCompare.push(p.replace('_64', ''));
+          toCompare.push(p + ".exe");
+          toCompare.push(p + ".app");
         }
         
         for (const { executables, id, name } of DetectableDB) {
