@@ -50,11 +50,17 @@ export default class ProcessServer {
           toCompare.push(splitPath.slice(-i).join('/'));
         }
 
-        for (const p of toCompare.slice()) { // add more possible tweaked paths for less false negatives
-          toCompare.push(p.replace('64', '')); // remove 64bit identifiers-ish
+        // add more possible tweaked paths for less false negatives
+        // remove 64bit identifiers-ish
+        for (const p of toCompare.slice()) {
+          toCompare.push(p.replace('64', ''));
           toCompare.push(p.replace('.x64', ''));
           toCompare.push(p.replace('x64', ''));
           toCompare.push(p.replace('_64', ''));
+        }
+
+        // add program extensions expected in detectable.json
+	      for (const p of toCompare.slice()) {
           toCompare.push(p + ".exe");
           toCompare.push(p + ".app");
         }
