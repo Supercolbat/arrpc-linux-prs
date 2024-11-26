@@ -65,13 +65,19 @@ export default class ProcessServer {
           toCompare.push(p + ".app");
         }
         
+        const isActive = x => {
+          if (x.is_launcher) return false;
+          if (
+            x.name[0] === '>'
+              ? x.name.substring(1) !== toCompare[0]
+              : !toCompare.some(y => x.name === y || `${cwdPath}/${y}`.includes(`/${x.name}`))
+          ) return false;
+          if (args && x.arguments) return args.join(" ").indexOf(x.arguments) > -1;
+          return true;
+        }
+        
         for (const { executables, id, name } of DetectableDB) {
-          if (executables?.some(x => {
-            if (x.is_launcher) return false;
-            if (x.name[0] === '>' ? x.name.substring(1) !== toCompare[0] : !toCompare.some(y => x.name === y || `${cwdPath}/${y}`.includes(`/${x.name}`))) return false;
-            if (args && x.arguments) return args.join(" ").indexOf(x.arguments) > -1;
-            return true;
-          })) {
+          if (executables?.some(isActive)) {
             detected.push({ executables, id, name });
           }
         }
@@ -89,7 +95,8 @@ export default class ProcessServer {
           timestamps[id] = Date.now();
         }
 
-        // Resending this on evry scan is intentional, so that in the case that arRPC scans processes before Discord, existing activities will be sent
+        // Resending this on evry scan is intentional, so that in the case that arRPC scans
+        // processes before Discord, existing activities will be sent
         this.handlers.message({
           socketId: id
         }, {
